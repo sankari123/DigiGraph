@@ -2,7 +2,8 @@
 <html>
   <head>
     <title>DigiGraph</title>
-	
+	<meta name="viewport" id="viewport" content="width=device-width, height=device-height,
+ initial-scale=1.0, maximum-scale=1.0,user-scalable=no;" />
 <script type="text/javascript" src="paint.js"></script>
     	<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
     	<script type="text/javascript" charset="utf-8" src="Canvas2ImagePlugin.js"></script>
@@ -27,6 +28,7 @@
     var pictureSource;   
     var destinationType; 
    var drawn=null;
+   var brightness;
     document.addEventListener("deviceready",onDeviceReady,false);
     
     function onDeviceReady() {
@@ -57,15 +59,22 @@ function onConfirmExit(button) {
    var ctx = c.getContext("2d");
    ctx.clearRect(0,0,c.width, c.height);
    var img = new Image();
- 		 img.onload= drawImageScaled.bind(null, img, ctx);
+ 		 img.onload= drawImageScaled_1.bind(null, img, ctx);
 		 img.src = "data:image/jpeg;base64," + imageData;
   }
-function drawImageScaled(img, ctx) {
+function drawImageScaled_1(img, ctx) {
    var canvas = ctx.canvas ;
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight-10;
-   	ctx.clearRect(0,0,canvas.width, canvas.height);
-    ctx.drawImage(img, 0,0,canvas.width,canvas.height);
+ canvas.width = window.innerWidth;
+ canvas.height = window.innerHeight-40;
+
+var hRatio = canvas.width  / img.width    ;
+   var vRatio =  canvas.height / img.height  ;
+   var ratio  = Math.min ( hRatio, vRatio );
+   var centerShift_x = ( canvas.width - img.width*ratio ) / 2;
+   var centerShift_y = ( canvas.height - img.height*ratio ) / 2;  
+   ctx.clearRect(0,0,canvas.width, canvas.height);
+   //ctx.drawImage(img, 0,0, img.width, img.height, 0,0,img.width*ratio, img.height*ratio);
+  ctx.drawImage(img, 0,0, img.width, img.height, centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);  
    tmp = ctx.getImageData(0,0,canvas.width, canvas.height);
 
 var colorSum = 0;
@@ -84,7 +93,33 @@ var colorSum = 0;
              brightness = Math.floor(colorSum / (canvas.width*canvas.height));
 			//alert('aaaaaa'+brightness);  
   }
-  var brightness;
+  function drawImageScaled(img, ctx) {
+   var canvas = ctx.canvas ;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight-40;
+   	ctx.clearRect(0,0,canvas.width, canvas.height);
+    ctx.drawImage(img, 0,0,img.width,img.height);
+   tmp = ctx.getImageData(0,0,img.width,img.height);
+
+var colorSum = 0;
+ var data1 =tmp.data;
+            var r,g,b,avg;
+
+              for(var x = 0, len = data1.length; x < len; x+=4) {
+                r = data1[x];
+                g = data1[x+1];
+                b = data1[x+2];
+
+                avg = Math.floor((r+g+b)/3);
+                colorSum += avg;
+            }
+
+             brightness = Math.floor(colorSum / (canvas.width*canvas.height));
+			//alert('aaaaaa'+brightness);  
+  }
+
+
+  
 function alertDismissed() {
             // do
 			}
@@ -108,7 +143,7 @@ document.body.style.backgroundImage='none';
 
 //	document.getElementById("sketchpadapp").style.display = "block";
   // document.getElementById("sketchpadapp").style.visibility="visible";
-      navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50,targetWidth:800, targetHeight:600,
+      navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50,targetWidth:1024, targetHeight:768,
         destinationType: destinationType.DATA_URL,correctOrientation: true });
     }
     function getPhoto(source) {
@@ -117,7 +152,7 @@ document.body.style.backgroundImage='none';
    
    //	document.getElementById("sketchpadapp").style.display = "block";
    //document.getElementById("sketchpadapp").style.visibility="visible";
-      navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 50,destinationType: destinationType.FILE_URI,sourceType: source });
+      navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 50,destinationType: destinationType.FILE_URI,correctOrientation: true,sourceType: source });
     }
    
     function onFail(message) {
@@ -155,7 +190,7 @@ function signPhoto()
 	    lastY=y;
         }
         
-		if (brightness<25)
+		if (brightness<35)
 		{
 		ctx.strokeStyle = '#ffffff';
 
@@ -278,6 +313,8 @@ var imageObj = new Image();
     imageObj.src = imgDataUrl;
 window.plugins.socialsharing.share('DigiGraph Share','Share',imageObj.src,null);
 } 
+navigator.notification.alert('Image Share successful... ',  alertDismissed,   'DigiGraph',   'OK'      );
+
 }
   
 function onConfirm(buttonIndex) {
@@ -307,7 +344,7 @@ function clearCanvas() {
     
     
      function OnUnLoad () {
-       //     alert ("Thanks for using DigiGraph...! Please visit our website to share your thoughts...!");
+       alert ("Thanks for using DigiGraph...! Please visit our website http://www.appcorridor.com to share your thoughts...!");
         }
         
         function popitup(url) {
