@@ -76,6 +76,8 @@ var srcWidth=img.width;
     ctx.drawImage(img, 0,0,i_width,i_height);
    tmp = ctx.getImageData(0,0,i_width,i_height);
 
+
+
   }
   function drawImageScaled(img, ctx) {
    var canvas = ctx.canvas ;
@@ -91,6 +93,8 @@ var srcWidth=img.width;
     ctx.drawImage(img, 0,0,i_width,i_height);
    tmp = ctx.getImageData(0,0,i_width,i_height);
   }
+
+
   
 function alertDismissed() {
             // do
@@ -108,15 +112,18 @@ function alertDismissed() {
     }
    
    
+
 function capturePhoto() {
 document.body.style.backgroundImage='none';
     
+
 //	document.getElementById("sketchpadapp").style.display = "block";
   // document.getElementById("sketchpadapp").style.visibility="visible";
       navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50,targetWidth:1024, targetHeight:768,
         destinationType: destinationType.DATA_URL,correctOrientation: true });
     }
     function getPhoto(source) {
+
    document.body.style.backgroundImage='none';
    
    //	document.getElementById("sketchpadapp").style.display = "block";
@@ -129,12 +136,14 @@ document.body.style.backgroundImage='none';
     }
     
     function show()
+
 {
       if (show_color==false)
       {
       var colors = ["#7FFF00", "#8B008B", "#E9967A", "#FFFFFF","#00BFFF", "#DAA520", "#CD5C5C"];
            show_color=true;
     var palette = "";
+
   for(var i = 0; i < colors.length; i++) {
                 palette = palette + " <div class='palette'" + " style='background-color:" + colors[i]
                     + "' onClick='setBgColor(this)'>  </div>";
@@ -143,14 +152,18 @@ document.body.style.backgroundImage='none';
 			
 			document.getElementById('palette-div').innerHTML = palette;
 			}
+
 }
 			function setBgColor( clickedDiv ) {
        
             var currentColor = clickedDiv.style.backgroundColor;
+
             document.getElementById('sss').value = currentColor;
 	}
     
     
+
+
 function signPhoto()
 {
    
@@ -190,6 +203,7 @@ function signPhoto()
 	//	if (brightness<25)
 	//	{
 	//	ctx.strokeStyle = 'red';
+
 	//	}
 	//	else
 	//	{
@@ -203,8 +217,11 @@ function signPhoto()
         ctx.lineCap = "round";
         
         ctx.beginPath();
+
 	ctx.moveTo(lastX,lastY);
+
 	ctx.lineTo(x,y);
+
         ctx.lineWidth = size;
         ctx.stroke();
         ctx.closePath();
@@ -283,6 +300,8 @@ function signPhoto()
 {
 if (ctx)
 {
+
+
     window.canvas2ImagePlugin.saveImageDataToLibrary(
         function(msg){
             console.log(msg);
@@ -297,6 +316,8 @@ if (ctx)
 function showConfirm() {
 if (ctx)
 {
+
+
 canvas = document.getElementById('theCanvas');
 ctx = canvas.getContext('2d');
 imgDataUrl = canvas.toDataURL();
@@ -306,6 +327,7 @@ window.plugins.socialsharing.share('DigiGraph Share','Share',imageObj.src,null);
 } 
 setTimeout(function(){ navigator.notification.alert('Image Share successful... ',  alertDismissed,   'DigiGraph',   'OK'      ); },8000);
 //navigator.notification.alert('Image Share successful... ',  alertDismissed,   'DigiGraph',   'OK'      );
+
 }
   
 function onConfirm(buttonIndex) {
