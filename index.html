@@ -8,7 +8,7 @@
     	<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
     	<script type="text/javascript" charset="utf-8" src="Canvas2ImagePlugin.js"></script>
 	<link href="styles.css" rel="stylesheet" type="text/css" />
-
+	
 
   <script>
   
@@ -65,7 +65,7 @@ function onConfirmExit(button) {
 function drawImageScaled_1(img, ctx) {
    var canvas = ctx.canvas ;
  canvas.width = window.innerWidth;
- canvas.height = window.innerHeight-30;
+ canvas.height = window.innerHeight-50;
 var srcWidth=img.width;
  var srcHeight=img.height;
  var ratio = Math.min(canvas.width  / srcWidth,  canvas.height/ srcHeight);
@@ -75,23 +75,12 @@ var srcWidth=img.width;
    	ctx.clearRect(0,0,canvas.width, canvas.height);
     ctx.drawImage(img, 0,0,i_width,i_height);
    tmp = ctx.getImageData(0,0,i_width,i_height);
-var colorSum = 0;
- var data1 =tmp.data;
-            var r,g,b,avg;
-              for(var x = 0, len = data1.length; x < len; x+=4) {
-                r = data1[x];
-                g = data1[x+1];
-                b = data1[x+2];
-                avg = Math.floor((r+g+b)/3);
-                colorSum += avg;
-            }
-             brightness = Math.floor(colorSum / (canvas.width*canvas.height));
-			//alert('aaaaaa'+brightness);  
+
   }
   function drawImageScaled(img, ctx) {
    var canvas = ctx.canvas ;
  canvas.width = window.innerWidth;
- canvas.height = window.innerHeight-30;
+ canvas.height = window.innerHeight-50;
  var srcWidth=img.width;
  var srcHeight=img.height;
  var ratio = Math.min(canvas.width  / srcWidth,  canvas.height/ srcHeight);
@@ -443,11 +432,5 @@ body {
         <canvas id="theCanvas" class="canvasStyle"></canvas>
 </div>
 
-
-
-
-
-
-    
   </body>
 </html>
