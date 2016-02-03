@@ -2,22 +2,18 @@
 <html>
   <head>
     <title>DigiGraph</title>
-	<meta name="viewport" id="viewport" content="width=device-width, height=device-height,
- initial-scale=1.0, maximum-scale=1.0,user-scalable=no;" />
-<script type="text/javascript" src="paint.js"></script>
+	<meta name="viewport" id="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0,user-scalable=no;" />
+	<script type="text/javascript" src="paint.js"></script>
     	<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
     	<script type="text/javascript" charset="utf-8" src="Canvas2ImagePlugin.js"></script>
 	<link href="styles.css" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="css-pop.js"></script>
 
-<script type="text/javascript" src="css-pop.js"></script>
-
-
-  <script>
+	<script>
   
     	var imgDataUrl;
 	var start = function() {
-      
-    }
+          }
     
     var paused=false;
     var canvas,ctx;
@@ -64,17 +60,15 @@ function onConfirmExit(button) {
   }
 function drawImageScaled_1(img, ctx) {
    var canvas = ctx.canvas ;
- canvas.width = window.innerWidth;
- canvas.height = window.innerHeight-40;
-
-var hRatio = canvas.width  / img.width    ;
+   canvas.width = window.innerWidth;
+   canvas.height = window.innerHeight-40;
+   var hRatio = canvas.width  / img.width    ;
    var vRatio =  canvas.height / img.height  ;
    var ratio  = Math.min ( hRatio, vRatio );
    var centerShift_x = ( canvas.width - img.width*ratio ) / 2;
    var centerShift_y = ( canvas.height - img.height*ratio ) / 2;  
    ctx.clearRect(0,0,canvas.width, canvas.height);
-   //ctx.drawImage(img, 0,0, img.width, img.height, 0,0,img.width*ratio, img.height*ratio);
-  ctx.drawImage(img, 0,0, img.width, img.height, centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);  
+   ctx.drawImage(img, 0,0, img.width, img.height, centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);  
    tmp = ctx.getImageData(0,0,canvas.width, canvas.height);
 
 var colorSum = 0;
@@ -91,7 +85,6 @@ var colorSum = 0;
             }
 
              brightness = Math.floor(colorSum / (canvas.width*canvas.height));
-			//alert('aaaaaa'+brightness);  
   }
   function drawImageScaled(img, ctx) {
    var canvas = ctx.canvas ;
@@ -115,14 +108,13 @@ var colorSum = 0;
             }
 
              brightness = Math.floor(colorSum / (canvas.width*canvas.height));
-			//alert('aaaaaa'+brightness);  
+		
   }
 
 
   
 function alertDismissed() {
-            // do
-			}
+            			}
         
     function onPhotoURISuccess(imageURI) {
 	    var c = document.getElementById("theCanvas");
@@ -139,24 +131,18 @@ function alertDismissed() {
 
 function capturePhoto() {
 document.body.style.backgroundImage='none';
-    
-
-//	document.getElementById("sketchpadapp").style.display = "block";
-  // document.getElementById("sketchpadapp").style.visibility="visible";
       navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50,targetWidth:1024, targetHeight:768,
         destinationType: destinationType.DATA_URL,correctOrientation: true });
     }
     function getPhoto(source) {
 
    document.body.style.backgroundImage='none';
-   
-   //	document.getElementById("sketchpadapp").style.display = "block";
-   //document.getElementById("sketchpadapp").style.visibility="visible";
+  
       navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 50,destinationType: destinationType.FILE_URI,correctOrientation: true,sourceType: source });
     }
    
     function onFail(message) {
- //     alert('Failed because: ' + message);
+
     }
 function signPhoto()
 {
@@ -192,7 +178,7 @@ function signPhoto()
         
 		if (brightness<35)
 		{
-		ctx.strokeStyle = '#ffffff';
+		ctx.strokeStyle = 'black';
 
 		}
 		else
