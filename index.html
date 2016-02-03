@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DigiGraph</title>
+	<meta name="viewport" id="viewport" content="width=device-width, height=device-height,
+ initial-scale=1.0, maximum-scale=1.0,user-scalable=no;" />
+<script type="text/javascript" src="paint.js"></script>
+    	<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    	<script type="text/javascript" charset="utf-8" src="Canvas2ImagePlugin.js"></script>
+	<link href="styles.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="colorPicker.css" type="text/css" />
+<script type="text/javascript" src="css-pop.js"></script>
+  <script src="jquery.min.js" type="text/javascript"></script>
+<script src="jquery.colorPicker.js" type="text/javascript"></script>
+
+
+  <script>
+  
+  
+    	var imgDataUrl;
+	var start = function() {
+      
+    }
+   // var colrSel;
+   var show_color = false;
+    var paused=false;
+    var canvas,ctx;
+    var mouseX,mouseY,mouseDown=0;
+    var touchX,touchY;
+    var lastX,lastY=-1;
+	var tmp;
+    var pictureSource;   
+    var destinationType; 
+   var drawn=null;
+   var brightness;
+    document.addEventListener("deviceready",onDeviceReady,false);
+    
+    function onDeviceReady() {
+    	pictureSource=navigator.camera.PictureSourceType;
+        destinationType=navigator.camera.DestinationType;
+         document.addEventListener("backbutton", function (e) {
+        e.preventDefault(); 
+    navigator.notification.confirm("Do you want to exit DigiGraph?", onConfirmExit, "DigiGraph", "Yes,No");
+    }, false );
+}
+    
+function onConfirmExit(button) {
+    if(button==2){ 
+        return;
+    }else if (navigator && navigator.app) {
+         navigator.app.exitApp();
+      }
+      else {
+         if (navigator && navigator.device) {
+            navigator.device.exitApp();
+	} 
+    }
+}    
+    function onPhotoDataSuccess(imageData) {
+      
+	 
+   var c = document.getElementById("theCanvas");
+   var ctx = c.getContext("2d");
+   ctx.clearRect(0,0,c.width, c.height);
+   var img = new Image();
+ 		 img.onload= drawImageScaled_1.bind(null, img, ctx);
+		 img.src = "data:image/jpeg;base64," + imageData;
+  }
+function drawImageScaled_1(img, ctx) {
+   var canvas = ctx.canvas ;
+ canvas.width = window.innerWidth;
+ canvas.height = window.innerHeight-30;
+var srcWidth=img.width;
+ var srcHeight=img.height;
+ var ratio = Math.min(canvas.width  / srcWidth,  canvas.height/ srcHeight);
+   var i_width=srcWidth*ratio;
+   var i_height=srcHeight*ratio;
+   
+   	ctx.clearRect(0,0,canvas.width, canvas.height);
+    ctx.drawImage(img, 0,0,i_width,i_height);
+   tmp = ctx.getImageData(0,0,i_width,i_height);
+var colorSum = 0;
+ var data1 =tmp.data;
+            var r,g,b,avg;
+              for(var x = 0, len = data1.length; x < len; x+=4) {
+                r = data1[x];
+                g = data1[x+1];
+                b = data1[x+2];
+                avg = Math.floor((r+g+b)/3);
+                colorSum += avg;
+            }
+             brightness = Math.floor(colorSum / (canvas.width*canvas.height));
+			//alert('aaaaaa'+brightness);  
+  }
+  function drawImageScaled(img, ctx) {
+   var canvas = ctx.canvas ;
+ canvas.width = window.innerWidth;
+ canvas.height = window.innerHeight-30;
+ var srcWidth=img.width;
+ var srcHeight=img.height;
+ var ratio = Math.min(canvas.width  / srcWidth,  canvas.height/ srcHeight);
+   var i_width=srcWidth*ratio;
+   var i_height=srcHeight*ratio;
+   
+   	ctx.clearRect(0,0,canvas.width, canvas.height);
+    ctx.drawImage(img, 0,0,i_width,i_height);
+   tmp = ctx.getImageData(0,0,i_width,i_height);
+  }
+  
+function alertDismissed() {
+            // do
+			}
+        
+    function onPhotoURISuccess(imageURI) {
+	    var c = document.getElementById("theCanvas");
+		var ctx = c.getContext('2d');
+		ctx.clearRect(0,0,c.width, c.height);
+	    var img = new Image();
+  
+		img.onload= drawImageScaled.bind(null, img, ctx);
+		img.src = imageURI;
+		
+    }
+   
+   
+function capturePhoto() {
+document.body.style.backgroundImage='none';
+    
+//	document.getElementById("sketchpadapp").style.display = "block";
+  // document.getElementById("sketchpadapp").style.visibility="visible";
+      navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50,targetWidth:1024, targetHeight:768,
+        destinationType: destinationType.DATA_URL,correctOrientation: true });
+    }
+    function getPhoto(source) {
+   document.body.style.backgroundImage='none';
+   
+   //	document.getElementById("sketchpadapp").style.display = "block";
+   //document.getElementById("sketchpadapp").style.visibility="visible";
+      navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 50,targetWidth:1024, targetHeight:768,destinationType: destinationType.FILE_URI,correctOrientation: true,sourceType: source });
+    }
+   
+    function onFail(message) {
+ //     alert('Failed because: ' + message);
+    }
+    
+    function show()
+{
+      if (show_color==false)
+      {
+      var colors = ["#7FFF00", "#8B008B", "#E9967A", "#FFFFFF","#00BFFF", "#DAA520", "#CD5C5C"];
+           show_color=true;
+    var palette = "";
+  for(var i = 0; i < colors.length; i++) {
+                palette = palette + " <div class='palette'" + " style='background-color:" + colors[i]
+                    + "' onClick='setBgColor(this)'>  </div>";
+            }
+			document.getElementById('palette-div').style.borderColor = "black";
+			
+			document.getElementById('palette-div').innerHTML = palette;
+			}
+}
+			function setBgColor( clickedDiv ) {
+       
+            var currentColor = clickedDiv.style.backgroundColor;
+            document.getElementById('sss').value = currentColor;
+	}
+    
+    
+function signPhoto()
+{
+   
+     show();
+//     colrSel=document.getElementById('color2').value;
+  //alert(colrSel);
+    canvas = document.getElementById('theCanvas');
+        
+        if (canvas.getContext)
+            ctx = canvas.getContext('2d');
+        
+        if (ctx) {
+		
+            
+            canvas.addEventListener('mousedown', theCanvas_mouseDown, false);
+            canvas.addEventListener('mousemove', theCanvas_mouseMove, false);
+            window.addEventListener('mouseup', theCanvas_mouseUp, false);
+            
+            canvas.addEventListener('touchstart', theCanvas_touchStart, false);
+            canvas.addEventListener('touchend', theCanvas_touchEnd, false);
+            canvas.addEventListener('touchmove', theCanvas_touchMove, false);
+        }
+		imgDataUrl = canvas.toDataURL();  
+	
+		
+		
+}
+  
+	function drawLine(ctx,x,y,size) {
+        
+        if (lastX==-1) {
+            lastX=x;
+	    lastY=y;
+	    
+        }
+        
+	//	if (brightness<25)
+	//	{
+	//	ctx.strokeStyle = 'red';
+	//	}
+	//	else
+	//	{
+       // r=0; g=0; b=0; a=255;
+     //	ctx.strokeStyle = "rgba("+r+","+g+","+b+","+(a/255)+")";
+     //ctx.strokeStyle = 'red';
+       // }
+       ctx.strokeStyle=document.getElementById('sss').value;
+       //document.getElementById('color2').value;
+        
+        ctx.lineCap = "round";
+        
+        ctx.beginPath();
+	ctx.moveTo(lastX,lastY);
+	ctx.lineTo(x,y);
+        ctx.lineWidth = size;
+        ctx.stroke();
+        ctx.closePath();
+	
+	lastX=x;
+	lastY=y;
+    } 
+    
+    function theCanvas_mouseDown() {
+        mouseDown=1;
+        drawLine(ctx,mouseX,mouseY,3);
+    }
+    
+    function theCanvas_mouseUp() {
+        mouseDown=0;
+        
+        lastX=-1;
+        lastY=-1;
+    }
+    
+    function theCanvas_mouseMove(e) { 
+    
+        getMousePos(e);
+    
+        if (mouseDown==1) {
+            drawLine(ctx,mouseX,mouseY,3);
+        }
+    }
+    
+    function getMousePos(e) {
+        if (!e)
+            var e = event;
+        if (e.offsetX) {
+            mouseX = e.offsetX;
+            mouseY = e.offsetY;
+        }
+        else if (e.layerX) {
+            mouseX = e.layerX;
+            mouseY = e.layerY;
+        }
+     }
+    
+    function theCanvas_touchStart() {
+    
+        getTouchPos();
+        drawLine(ctx,touchX,touchY,3);
+    
+        event.preventDefault();
+    }
+    function theCanvas_touchEnd() {
+        lastX=-1;
+        lastY=-1;
+    
+    }
+    
+    function theCanvas_touchMove(e) { 
+    
+        getTouchPos(e);
+    
+        drawLine(ctx,touchX,touchY,3); 
+    
+        event.preventDefault();
+    }
+    function getTouchPos(e) {
+        if (!e)
+            var e = event;
+        if(e.touches) {
+            if (e.touches.length == 1) { // Only deal with one finger
+                var touch = e.touches[0]; // Get the information for finger #1
+                touchX=touch.pageX-touch.target.offsetLeft;
+                touchY=touch.pageY-touch.target.offsetTop;
+            }
+        }
+    }
+	function saveCanvas()
+{
+if (ctx)
+{
+    window.canvas2ImagePlugin.saveImageDataToLibrary(
+        function(msg){
+            console.log(msg);
+        },
+        function(err){
+            console.log(err);
+        },
+        document.getElementById("theCanvas")  );
+ navigator.notification.alert('Image saved successfully.To view the image, open <Pictures> folder in your device. ',  alertDismissed,   'DigiGraph',   'OK'      );
+   }     
+}
+function showConfirm() {
+if (ctx)
+{
+canvas = document.getElementById('theCanvas');
+ctx = canvas.getContext('2d');
+imgDataUrl = canvas.toDataURL();
+var imageObj = new Image();
+    imageObj.src = imgDataUrl;
+window.plugins.socialsharing.share('DigiGraph Share','Share',imageObj.src,null);
+} 
+setTimeout(function(){ navigator.notification.alert('Image Share successful... ',  alertDismissed,   'DigiGraph',   'OK'      ); },8000);
+//navigator.notification.alert('Image Share successful... ',  alertDismissed,   'DigiGraph',   'OK'      );
+}
+  
+function onConfirm(buttonIndex) {
+  if(buttonIndex==1)
+  {
+    
+	}
+}
+function clearCanvas() {
+	var c=document.getElementById("theCanvas");
+	var ctx=c.getContext("2d");
+	
+	  
+       ctx.clearRect(0, 0, c.width, c.height);
+	   ctx.putImageData(tmp,0,0);
+    }
+    
+    function clearCanvas_1() {
+	var canvas=document.getElementById("theCanvas");
+	var ctx=canvas.getContext("2d");
+       ctx.clearRect(0, 0, canvas.width, canvas.height);
+	  
+    }
+    
+  
+    	
+    
+    
+     function OnUnLoad () {
+       alert ("Thanks for using DigiGraph...! Please visit our website http://www.appcorridor.com to share your thoughts...!");
+        }
+        
+        function popitup(url) {
+	newwindow=window.open(url,'name','height=200,width=150,resizable = no');
+	if (window.focus) {newwindow.focus()}
+	return false;
+}
+function OpenPopupCenter(pageURL, title, w, h) {
+            var left = (screen.width - w) / 2;
+            var top = (screen.height - h) / 4;  // for 25% - devide by 4  |  for 33% - devide by 3
+            var targetWin = window.open(pageURL, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+        } 
+</script>
+<style>
+body {
+	margin:0;
+	padding:0;
+	background-color:#fbd5b5;
+     background-image: url("bg_new.png");
+    background-repeat: no-repeat;
+	/* 	background-color:#cc9d55;
+	overflow: hidden;
+   color: #FFFFFF;*/
+	background-size:cover;/*this sets the image to fullscreen covering the whole screen*/  
+   /*css hack for ie*/     
+}
+	
+	.colorPa
+	{
+		visibility:hidden;
+		display:none;
+		
+	}
+	
+	.sketchpadapp {
+	/*border: 0px solid gray;*/
+	position: fixed;
+	}
+ 	.canvasStyle
+	{
+       /* border: 2px black solid;*/
+	position: absolute; 
+     width: 100%; 
+     height: 100%; 
+     overflow: hidden;
+    }
+	.btncss
+	{
+	
+	background:none;
+	border:none;
+	padding:0;
+	cursor:pinter;
+	font: 8pt arial;
+	}
+	.palette {
+	float: left;
+        height: 40px;
+        width: 40px;
+    }
+	
+  </style>
+  </head>
+<body onload="start();" onunload="OnUnLoad();">
+  
+
+	<div id="hd1" class="hdd">
+	
+		<table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
+		<tr><td align="center">	<font face=system size=3>DigiGraph</font></td>
+	<!--<td align="right"><img src="home.png" onclick="gotoHomePage();"></td>-->
+	</tr>
+	<tr><td>&nbsp;</tr></table></div>
+<BR>
+  <div style="overflow:auto;">
+<table cellspacing="0" cellpadding="0" width="100%" style="margin: 0px;">
+<tr height="1%" bgcolor="#fbd5b5">
+<td><button onclick="getPhoto(pictureSource.PHOTOLIBRARY);" class="btncss"><img src="1.png" width="55px" height="55px"></font></button></td>
+<td><button onclick="capturePhoto();" class="btncss"><img src="2.png" width="55px" height="55px"></FONT></button></td>
+<td><button onclick="signPhoto();" class="btncss"><img src="3.png" width="55px" height="55px"></FONT> </button></td>
+<td><button onclick="saveCanvas();" class="btncss" ><img src="4.png" width="55px" height="55px"></FONT></td>
+<td><button onclick="clearCanvas();" class="btncss" ><img src="5.png" width="55px" height="55px"></FONT></td>
+<td><button onclick="showConfirm();" class="btncss" ><img src="6.png" width="55px" height="55px"></FONT></td></tr>
+<tr><td><font size=1 face="system">&nbsp;&nbsp;&nbsp;<B>Gallery</B></font></td><td><font size=1 face=system>&nbsp;&nbsp;&nbsp;<B>Camera</B></font></td><td><font size=1 face=system>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Sign</B></font></td><td><font size=1 face=system>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Save</B></font></td><td><font size=1 face=system>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Clear</B></font></td><td><font size=1 face=system>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Share</B></font></td></tr>
+
+</table>
+  </div>
+ 
+    <div id='palette-div' style='border:2px solid fbd5b5; float:right;'>&nbsp;</div>
+     <input type="hidden" id="sss">
+  <BR><BR>
+
+<div id="sketchpadapp">
+        <canvas id="theCanvas" class="canvasStyle"></canvas>
+</div>
+
+
+
+
+
+
+    
+  </body>
+</html>
