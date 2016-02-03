@@ -77,7 +77,21 @@ var srcWidth=img.width;
    tmp = ctx.getImageData(0,0,i_width,i_height);
 
 
+var colorSum = 0;
+ var data1 =tmp.data;
+            var r,g,b,avg;
 
+              for(var x = 0, len = data1.length; x < len; x+=4) {
+                r = data1[x];
+                g = data1[x+1];
+                b = data1[x+2];
+
+                avg = Math.floor((r+g+b)/3);
+                colorSum += avg;
+            }
+
+             brightness = Math.floor(colorSum / (canvas.width*canvas.height));
+			//alert('aaaaaa'+brightness);  
   }
   function drawImageScaled(img, ctx) {
    var canvas = ctx.canvas ;
@@ -454,5 +468,11 @@ body {
         <canvas id="theCanvas" class="canvasStyle"></canvas>
 </div>
 
+
+
+
+
+
+    
   </body>
 </html>
