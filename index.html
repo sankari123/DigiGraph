@@ -62,7 +62,71 @@ function onConfirmExit(button) {
  		 img.onload= drawImageScaled_1.bind(null, img, ctx);
 		 img.src = "data:image/jpeg;base64," + imageData;
   }
+  function RememberOriginalSize(img) {
+
+            if (!img.originalsize) {
+                img.originalsize = {width : img.width, height : img.height};
+            }
+
+        }
+
 function drawImageScaled_1(img, ctx) {
+   		var canvas = ctx.canvas ;
+ 		canvas.width = window.innerWidth;
+ 		canvas.height = window.innerHeight-50;
+  		RememberOriginalSize(img);
+		var srcwidth = img.originalsize.width;
+            	var srcheight = img.originalsize.height;
+  		var result = ScaleImage(srcwidth,srcheight,canvas.width,canvas.height,true); 
+   		ctx.clearRect(0,0,canvas.width, canvas.height);
+   		ctx.drawImage(img, result.targetleft, result.targettop, result.width, result.height);
+   		tmp = ctx.getImageData(0,0,result.width, result.height);
+    
+  }
+function ScaleImage(srcwidth, srcheight, targetwidth, targetheight, fLetterBox) {
+
+    var result = { width: 0, height: 0, fScaleToTargetWidth: true };
+
+    if ((srcwidth <= 0) || (srcheight <= 0) || (targetwidth <= 0) || (targetheight <= 0)) {
+        return result;
+    }
+
+    // scale to the target width
+    var scaleX1 = targetwidth;
+    var scaleY1 = (srcheight * targetwidth) / srcwidth;
+
+    // scale to the target height
+    var scaleX2 = (srcwidth * targetheight) / srcheight;
+    var scaleY2 = targetheight;
+
+    // now figure out which one we should use
+    var fScaleOnWidth = (scaleX2 > targetwidth);
+    if (fScaleOnWidth) {
+        fScaleOnWidth = fLetterBox;
+    }
+    else {
+       fScaleOnWidth = !fLetterBox;
+    }
+
+    if (fScaleOnWidth) {
+        result.width = Math.floor(scaleX1);
+        result.height = Math.floor(scaleY1);
+        result.fScaleToTargetWidth = true;
+    }
+    else {
+        result.width = Math.floor(scaleX2);
+        result.height = Math.floor(scaleY2);
+        result.fScaleToTargetWidth = false;
+    }
+    result.targetleft = Math.floor((targetwidth - result.width) / 2);
+    result.targettop = Math.floor((targetheight - result.height) / 2);
+
+    return result;
+}
+
+
+
+function drawImageScaled_1old(img, ctx) {
    var canvas = ctx.canvas ;
  canvas.width = window.innerWidth;
  canvas.height = window.innerHeight-50;
@@ -75,25 +139,8 @@ var srcWidth=img.width;
    	ctx.clearRect(0,0,canvas.width, canvas.height);
     ctx.drawImage(img, 0,0,i_width,i_height);
    tmp = ctx.getImageData(0,0,i_width,i_height);
-
-
-var colorSum = 0;
- var data1 =tmp.data;
-            var r,g,b,avg;
-
-              for(var x = 0, len = data1.length; x < len; x+=4) {
-                r = data1[x];
-                g = data1[x+1];
-                b = data1[x+2];
-
-                avg = Math.floor((r+g+b)/3);
-                colorSum += avg;
-            }
-
-             brightness = Math.floor(colorSum / (canvas.width*canvas.height));
-			//alert('aaaaaa'+brightness);  
   }
-  function drawImageScaled(img, ctx) {
+  function drawImageScaledold(img, ctx) {
    var canvas = ctx.canvas ;
  canvas.width = window.innerWidth;
  canvas.height = window.innerHeight-50;
@@ -108,7 +155,19 @@ var colorSum = 0;
    tmp = ctx.getImageData(0,0,i_width,i_height);
   }
 
-
+function drawImageScaled(img, ctx) {
+   var canvas = ctx.canvas ;
+ canvas.width = window.innerWidth;
+ canvas.height = window.innerHeight-50;
+RememberOriginalSize(img);
+var srcwidth = img.originalsize.width;
+ var srcheight = img.originalsize.height;
+ var result = ScaleImage(srcwidth,srcheight,canvas.width,canvas.height,true); 
+   	ctx.clearRect(0,0,canvas.width, canvas.height);
+   ctx.drawImage(img, result.targetleft, result.targettop, result.width, result.height);
+   tmp = ctx.getImageData(0,0,result.width, result.height);
+ 
+  
   
 function alertDismissed() {
             // do
