@@ -2,23 +2,24 @@
 <html>
   <head>
     <title>DigiGraph</title>
-	<meta name="viewport" id="viewport" content="width=device-width, height=device-height,
- initial-scale=1.0, maximum-scale=1.0,user-scalable=no;" />
+<!--	<meta name="viewport" content="width=device-width, initial-scale=1">-->
+	<meta name="viewport" id="viewport" content="width=device-width, height=device-height,initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
 <script type="text/javascript" src="paint.js"></script>
     	<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
     	<script type="text/javascript" charset="utf-8" src="Canvas2ImagePlugin.js"></script>
 	<link href="styles.css" rel="stylesheet" type="text/css" />
-	
+
+<script type="text/javascript" src="css-pop.js"></script>
+
 
   <script>
   
-  
-    	var imgDataUrl;
+    	var show_color = false;
+		var imgDataUrl;
 	var start = function() {
       
     }
-   
-   var show_color = false;
+    
     var paused=false;
     var canvas,ctx;
     var mouseX,mouseY,mouseDown=0;
@@ -28,7 +29,6 @@
     var pictureSource;   
     var destinationType; 
    var drawn=null;
-   var brightness;
     document.addEventListener("deviceready",onDeviceReady,false);
     
     function onDeviceReady() {
@@ -62,7 +62,7 @@ function onConfirmExit(button) {
  		 img.onload= drawImageScaled_1.bind(null, img, ctx);
 		 img.src = "data:image/jpeg;base64," + imageData;
   }
-  function RememberOriginalSize(img) {
+function RememberOriginalSize(img) {
             if (!img.originalsize) {
                 img.originalsize = {width : img.width, height : img.height};
             }
@@ -70,14 +70,16 @@ function onConfirmExit(button) {
 function drawImageScaled_1(img, ctx) {
    		var canvas = ctx.canvas ;
  		canvas.width = window.innerWidth;
- 		canvas.height = window.innerHeight-50;
+ 		canvas.height = window.innerHeight-40;
   		RememberOriginalSize(img);
 		var srcwidth = img.originalsize.width;
             	var srcheight = img.originalsize.height;
   		var result = ScaleImage(srcwidth,srcheight,canvas.width,canvas.height,true); 
    		ctx.clearRect(0,0,canvas.width, canvas.height);
+   		window.addEventListener('orientationchange', doOnOrientationChange);
    		ctx.drawImage(img, result.targetleft, result.targettop, result.width, result.height);
-   		tmp = ctx.getImageData(0,0,result.width, result.height);
+   		tmp = ctx.getImageData(0,0,canvas.width, canvas.height);
+   		
     
   }
 function ScaleImage(srcwidth, srcheight, targetwidth, targetheight, fLetterBox) {
@@ -113,48 +115,58 @@ function ScaleImage(srcwidth, srcheight, targetwidth, targetheight, fLetterBox) 
     result.targettop = Math.floor((targetheight - result.height) / 2);
     return result;
 }
-function drawImageScaled_1old(img, ctx) {
-   var canvas = ctx.canvas ;
- canvas.width = window.innerWidth;
- canvas.height = window.innerHeight-50;
-var srcWidth=img.width;
- var srcHeight=img.height;
- var ratio = Math.min(canvas.width  / srcWidth,  canvas.height/ srcHeight);
-   var i_width=srcWidth*ratio;
-   var i_height=srcHeight*ratio;
-   
-   	ctx.clearRect(0,0,canvas.width, canvas.height);
-    ctx.drawImage(img, 0,0,i_width,i_height);
-   tmp = ctx.getImageData(0,0,i_width,i_height);
-  }
-  function drawImageScaledold(img, ctx) {
-   var canvas = ctx.canvas ;
- canvas.width = window.innerWidth;
- canvas.height = window.innerHeight-50;
- var srcWidth=img.width;
- var srcHeight=img.height;
- var ratio = Math.min(canvas.width  / srcWidth,  canvas.height/ srcHeight);
-   var i_width=srcWidth*ratio;
-   var i_height=srcHeight*ratio;
-   
-   	ctx.clearRect(0,0,canvas.width, canvas.height);
-    ctx.drawImage(img, 0,0,i_width,i_height);
-   tmp = ctx.getImageData(0,0,i_width,i_height);
-  }
-function drawImageScaled(img, ctx) {
-   var canvas = ctx.canvas ;
- canvas.width = window.innerWidth;
- canvas.height = window.innerHeight-50;
-RememberOriginalSize(img);
-var srcwidth = img.originalsize.width;
- var srcheight = img.originalsize.height;
- var result = ScaleImage(srcwidth,srcheight,canvas.width,canvas.height,true); 
-   	ctx.clearRect(0,0,canvas.width, canvas.height);
-   ctx.drawImage(img, result.targetleft, result.targettop, result.width, result.height);
-   tmp = ctx.getImageData(0,0,result.width, result.height);
- 
-}
   
+function drawImageScaled_1oldd(img, ctx) {
+   var canvas = ctx.canvas ;
+ canvas.width = window.innerWidth;
+ canvas.height = window.innerHeight-40;
+var hRatio = canvas.width  / img.width    ;
+   var vRatio =  canvas.height / img.height  ;
+   var ratio  = Math.min ( hRatio, vRatio );
+   
+   var centerShift_x = ( canvas.width - img.width*ratio ) / 2;
+   var centerShift_y = ( canvas.height - img.height*ratio ) / 2;  
+   ctx.clearRect(0,0,canvas.width, canvas.height);
+   //ctx.drawImage(img, 0,0, img.width, img.height, 0,0,img.width*ratio, img.height*ratio);
+  ctx.drawImage(img, 0,0, img.width, img.height, centerShift_x,centerShift_y,img.width*ratio, img.height*ratio);  
+   //	ctx.clearRect(0,0,canvas.width, canvas.height);
+  //  ctx.drawImage(img, 0,0,img.width,img.height);
+   tmp = ctx.getImageData(0,0,img.width, img.height);
+  window.addEventListener('orientationchange', doOnOrientationChange);
+var colorSum = 0;
+ var data1 =tmp.data;
+            var r,g,b,avg;
+              for(var x = 0, len = data1.length; x < len; x+=4) {
+                r = data1[x];
+                g = data1[x+1];
+                b = data1[x+2];
+                avg = Math.floor((r+g+b)/3);
+                colorSum += avg;
+            }
+             brightness = Math.floor(colorSum / (canvas.width*canvas.height));
+			//alert('aaaaaa'+brightness);  
+  }
+  function drawImageScaled(img, ctx) {
+   var canvas = ctx.canvas ;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight-40;
+   	ctx.clearRect(0,0,canvas.width, canvas.height);
+   	window.addEventListener('orientationchange', doOnOrientationChange);
+    ctx.drawImage(img, 0,0,img.width,img.height);
+   tmp = ctx.getImageData(0,0,img.width,img.height);
+var colorSum = 0;
+ var data1 =tmp.data;
+            var r,g,b,avg;
+              for(var x = 0, len = data1.length; x < len; x+=4) {
+                r = data1[x];
+                g = data1[x+1];
+                b = data1[x+2];
+                avg = Math.floor((r+g+b)/3);
+                colorSum += avg;
+            }
+             brightness = Math.floor(colorSum / (canvas.width*canvas.height));
+			//alert('aaaaaa'+brightness);  
+  }
 function alertDismissed() {
             // do
 			}
@@ -174,22 +186,23 @@ function alertDismissed() {
 function capturePhoto() {
 document.body.style.backgroundImage='none';
     
-
-      navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50,targetWidth:1024, targetHeight:768,
-        destinationType: destinationType.DATA_URL,correctOrientation: true });
+//	document.getElementById("sketchpadapp").style.display = "block";
+  // document.getElementById("sketchpadapp").style.visibility="visible";
+      navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50, targetWidth:1024, targetHeight:768, destinationType: destinationType.DATA_URL,correctOrientation: true });
     }
     function getPhoto(source) {
    document.body.style.backgroundImage='none';
    
-   
+   //	document.getElementById("sketchpadapp").style.display = "block";
+   //document.getElementById("sketchpadapp").style.visibility="visible";
+     //navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 50,targetWidth:1024, targetHeight:768,destinationType: destinationType.FILE_URI,correctOrientation: true,sourceType: source });
       navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 50,targetWidth:1024, targetHeight:768,destinationType: destinationType.FILE_URI,correctOrientation: true,sourceType: source });
     }
    
     function onFail(message) {
  //     alert('Failed because: ' + message);
     }
-    
-    function show()
+	function show()
 {
       if (show_color==false)
       {
@@ -205,20 +218,27 @@ document.body.style.backgroundImage='none';
 			document.getElementById('palette-div').innerHTML = palette;
 			}
 }
-			function setBgColor( clickedDiv ) {
+function setBgColor(clickedDiv ) {
        
             var currentColor = clickedDiv.style.backgroundColor;
             document.getElementById('sss').value = currentColor;
 	}
     
     
+function doOnOrientationChange()
+{
+      if (screen.height > screen.width) {
+         window.orientation='portrait';
+      } else {
+         window.orientation='portrait';
+      }
+}
 function signPhoto()
 {
    
-     show();
-//     colrSel=document.getElementById('color2').value;
-  //alert(colrSel);
-    canvas = document.getElementById('theCanvas');
+    window.addEventListener('orientationchange', doOnOrientationChange);
+    show();
+	canvas = document.getElementById('theCanvas');
         
         if (canvas.getContext)
             ctx = canvas.getContext('2d');
@@ -245,12 +265,9 @@ function signPhoto()
         if (lastX==-1) {
             lastX=x;
 	    lastY=y;
-	    
         }
         
-
-       ctx.strokeStyle=document.getElementById('sss').value;
-       //document.getElementById('color2').value;
+		ctx.strokeStyle=document.getElementById('sss').value;
         
         ctx.lineCap = "round";
         
@@ -343,8 +360,8 @@ if (ctx)
             console.log(err);
         },
         document.getElementById("theCanvas")  );
- navigator.notification.alert('Image saved successfully.To view the image, open <Pictures> folder in your device. ',  alertDismissed,   'DigiGraph',   'OK'      );
-   }     
+ navigator.notification.alert('Image saved successfully.To view the image, open <<Pictures>> folder in your device. ',  alertDismissed,   'DigiGraph',   'OK'      );
+}      
 }
 function showConfirm() {
 if (ctx)
@@ -354,12 +371,24 @@ ctx = canvas.getContext('2d');
 imgDataUrl = canvas.toDataURL();
 var imageObj = new Image();
     imageObj.src = imgDataUrl;
-window.plugins.socialsharing.share('DigiGraph Share','Share',imageObj.src,null);
-} 
-setTimeout(function(){ navigator.notification.alert('Image Share successful... ',  alertDismissed,   'DigiGraph',   'OK'      ); },8000);
-//navigator.notification.alert('Image Share successful... ',  alertDismissed,   'DigiGraph',   'OK'      );
+//window.plugins.socialsharing.share('DG','Share',imageObj.src,alert('Share OK'), function(errormsg){alert("Share Failed...")}) // error callback);
+ window.plugins.socialsharing.share('DG','DigiGraph',imageObj.src,null);
+//setTimeout(function(){ navigator.notification.alert('Image Shared Successfully...',  alertDismissed,   'DigiGraph',   'OK'); },8000);
 }
-  
+else
+{
+	navigator.notification.alert('Please load a image...',  alertDismissed,   'DigiGraph',   'OK');	
+}
+}
+function onSuccess()
+{
+navigator.notification.alert('Image Shared Successfully...',  alertDismissed,   'DigiGraph',   'OK');	
+}
+function onError()
+{
+	
+navigator.notification.alert('Image Share Failed...',  alertDismissed,   'DigiGraph',   'OK');	
+}
 function onConfirm(buttonIndex) {
   if(buttonIndex==1)
   {
@@ -387,7 +416,8 @@ function clearCanvas() {
     
     
      function OnUnLoad() {
-       alert ("Thanks for using DigiGraph...! Please visit our website http://www.appcorridor.com to share your thoughts...!");
+     	navigator.notification.alert('Thanks for using DigiGraph...! Please visit our website http://www.appcorridor.com to share your thoughts...!...',  alertDismissed,   'DigiGraph',   'OK');
+       //    alert ("Thanks for using DigiGraph...! Please visit our website to share your thoughts...!");
         }
         
         function popitup(url) {
@@ -414,7 +444,6 @@ body {
 	background-size:cover;/*this sets the image to fullscreen covering the whole screen*/  
    /*css hack for ie*/     
 }
-	
 	.colorPa
 	{
 		visibility:hidden;
@@ -424,15 +453,12 @@ body {
 	
 	.sketchpadapp {
 	/*border: 0px solid gray;*/
-	position: fixed;
+   
 	}
  	.canvasStyle
 	{
-       /* border: 2px black solid;*/
-	position: absolute; 
-     width: 100%; 
-     height: 100%; 
-     overflow: hidden;
+   /*     border: 0px #CCC solid;*/
+	/*position:fixed;*/
     }
 	.btncss
 	{
@@ -452,16 +478,20 @@ body {
   </style>
   </head>
 <body onload="start();" onunload="OnUnLoad();">
-  
+  	 <div id="popUpDiv" style="display:none">
+
+<a href="#" onclick="popup('popUpDiv')" >Close</a>
+</div>
+	<div id="blanket" style="display:none"></div>
 
 	<div id="hd1" class="hdd">
 	
 		<table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
-		<tr><td align="center">	<font face="arial" size="4">DigiGraph</font></td>
+		<tr><td align="center">	<font face=system size=3>DigiGraph</font></td>
 	<!--<td align="right"><img src="home.png" onclick="gotoHomePage();"></td>-->
 	</tr>
-	<tr><td>&nbsp;</tr></table></div>
-<BR>
+	<tr><td>&nbsp;</td></tr></table></div>
+
   <div style="overflow:auto;">
 <table cellspacing="0" cellpadding="0" width="100%" style="margin: 0px;">
 <tr height="1%" bgcolor="#fbd5b5">
@@ -475,8 +505,7 @@ body {
 
 </table>
   </div>
- 
-    <div id='palette-div' style='border:2px solid fbd5b5; float:right;'>&nbsp;</div>
+  <div id='palette-div' style='border:2px solid fbd5b5; float:right;'>&nbsp;</div>
      <input type="hidden" id="sss">
   <BR><BR>
 
@@ -484,11 +513,5 @@ body {
         <canvas id="theCanvas" class="canvasStyle"></canvas>
 </div>
 
-
-
-
-
-
-    
   </body>
 </html>
