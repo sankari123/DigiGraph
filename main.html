@@ -32,8 +32,8 @@
     document.addEventListener("deviceready",onDeviceReady,false);
     
     function onDeviceReady() {
-    	pictureSource=navigator.camera.PictureSourceType;
-        destinationType=navigator.camera.DestinationType;
+    	
+	    
          document.addEventListener("backbutton", function (e) {
         e.preventDefault(); 
     navigator.notification.confirm("Do you want to exit DigiGraph?", onConfirmExit, "DigiGraph", "Yes,No");
@@ -526,12 +526,12 @@ body {
   <div style="overflow:auto;">
 <table cellspacing="0" cellpadding="0" width="100%" style="margin: 0px;">
 <tr height="1%" bgcolor="#fbd5b5">
-<td><button onclick="getPhoto(pictureSource.PHOTOLIBRARY);" class="btncss"><img src="1.png" width="55px" height="55px"></font></button></td>
-<td><button onclick="capturePhoto();" class="btncss"><img src="2.png" width="55px" height="55px"></FONT></button></td>
-<td><button onclick="signPhoto();" class="btncss"><img src="3.png" width="55px" height="55px"></FONT> </button></td>
-<td><button onclick="saveCanvas();" class="btncss" ><img src="4.png" width="55px" height="55px"></FONT></td>
-<td><button onclick="clearCanvas();" class="btncss" ><img src="5.png" width="55px" height="55px"></FONT></td>
-<td><button onclick="showConfirm();" class="btncss" ><img src="6.png" width="55px" height="55px"></FONT></td></tr>
+<td><button onclick="getPhoto(pictureSource.PHOTOLIBRARY);" class="btncss"><img src="1.png" width="55px" height="55px"></button></td>
+<td><button onclick="capturePhoto();" class="btncss"><img src="2.png" width="55px" height="55px"></button></td>
+<td><button onclick="signPhoto();" class="btncss"><img src="3.png" width="55px" height="55px"></button></td>
+<td><button onclick="saveCanvas();" class="btncss" ><img src="4.png" width="55px" height="55px"></button></td>
+<td><button onclick="clearCanvas();" class="btncss" ><img src="5.png" width="55px" height="55px"></button></td>
+<td><button onclick="showConfirm();" class="btncss" ><img src="6.png" width="55px" height="55px"></button></td></tr>
 <tr><td><font size=1 face="system">&nbsp;&nbsp;&nbsp;<B>Gallery</B></font></td><td><font size=1 face=system>&nbsp;&nbsp;&nbsp;<B>Camera</B></font></td><td><font size=1 face=system>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Sign</B></font></td><td><font size=1 face=system>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Save</B></font></td><td><font size=1 face=system>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Clear</B></font></td><td><font size=1 face=system>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<B>Share</B></font></td></tr>
 
 </table>
