@@ -56,7 +56,7 @@
   
   
   
-  <gap:plugin name="cordova-plugin-canvas2image"/>
+  <gap:plugin name="cordova-plugin-Canvas2ImagePlugin"/>
   <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" />
   <gap:plugin name="com.dawsonloudon.videoplayer" version="1.0.0" />
 
