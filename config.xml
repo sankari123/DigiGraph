@@ -56,7 +56,7 @@
   
   
   
-  <gap:plugin name="cordova-plugin-Canvas2ImagePlugin"/>
+  <plugin name="cordova-plugin-Canvas2ImagePlugin"/>
   <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" />
   
   <icon src="icon.png"/>
