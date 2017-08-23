@@ -52,11 +52,8 @@
 	<gap:plugin name="cordova-plugin-listpicker" source="npm" />
         <gap:plugin name="cordova-plugin-calendar" source="npm" />
         <plugin name="cordova-pdf-generator" source="npm" />
-  
-  
-  
-  <plugin name="cordova-plugin-canvas2image"/>
-  <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" />
+        <gap:plugin name="cordova-plugin-canvas2image"/>
+        <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" />
   
   <icon src="icon.png"/>
   <icon src="icon_ldpi.png" gap:platform="android" gap:qualifier="ldpi"/>
