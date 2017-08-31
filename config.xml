@@ -53,7 +53,7 @@
 	<gap:plugin name="cordova-plugin-listpicker" source="npm" />
         <gap:plugin name="cordova-plugin-calendar" source="npm" />
         <plugin name="cordova-pdf-generator" source="npm" />
-        <gap:plugin name="cordova-plugin-Canvas2Image"/>
+         
         <gap:plugin name="cordova-plugin-x-socialsharing" source="npm" />
   
   <icon src="icon.png"/>
